@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ChintarJarV3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* Theme tokens: light by default, dark follows the OS setting */
+:root{--bg:#f5f0e4;--card:#fffaf0;--ink:#22434b;--mute:#5d757b;--teal:#3a9ca6;--on:#fff;--soft:#dcedf0;--line:#c9dcdf;--jar:#7fb9c4;--glass:#cfe9ee;--water:rgba(58,156,166,.38);--slip:#fffaf0;--warm:#f3dcc6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#112a31;--card:#1a3841;--ink:#e6f1f2;--mute:#9bb5ba;--teal:#5cbcc6;--on:#0e2328;--soft:#25505a;--line:#2f5660;--jar:#5aa3b0;--glass:#2a5560;--water:rgba(92,188,198,.35);--slip:#e9e2d0}}
+:root[data-theme="dark"]{--bg:#112a31;--card:#1a3841;--ink:#e6f1f2;--mute:#9bb5ba;--teal:#5cbcc6;--on:#0e2328;--soft:#25505a;--line:#2f5660;--jar:#5aa3b0;--glass:#2a5560;--water:rgba(92,188,198,.35);--slip:#e9e2d0}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 Nunito,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:480px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
+h1{margin:8px 0 0;font-size:30px;font-weight:800;text-align:center;user-select:none;-webkit-user-select:none}
+h2{font-size:19px;margin:0 0 8px}
+.sub,.mute{color:var(--mute)}
+.sub{text-align:center;margin:2px 0 8px}
+.jarwrap{position:relative;width:min(62vw,240px);margin:8px auto}
+svg{display:block;width:100%;height:auto}
+#lvl{transition:transform 1.2s cubic-bezier(.3,.8,.3,1)}
+.count{text-align:center;color:var(--mute);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;margin:14px 0}
+input{width:100%;min-height:52px;border:2px solid var(--line);border-radius:16px;padding:0 14px;font:inherit;color:inherit;background:var(--bg);margin-bottom:8px}
+input:focus-visible,.btn:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.btn{display:block;width:100%;min-height:52px;border:0;border-radius:16px;padding:12px 16px;margin:8px 0;font:inherit;font-weight:700;background:var(--teal);color:var(--on);cursor:pointer;transition:transform .15s,filter .15s,background .2s}
+.btn:active{transform:scale(.97);filter:brightness(.93)}
+.btn.alt{background:var(--soft);color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--mute);border:2px solid var(--line)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none;filter:none}
+.row{display:flex;gap:10px}.row .btn{flex:1}
+.msg{margin:4px 0 0;text-align:center;font-weight:700;color:var(--teal)}
+.msg:empty{display:none}
+.note{font-size:14px;color:var(--mute);text-align:center;margin:8px 0 0}
+.care{background:var(--warm);color:#4a3320;border-radius:16px;padding:14px;text-align:left;font-weight:600}
+.care em{display:block;margin-top:8px;font-style:normal;font-weight:800}
+.slipcard{background:var(--slip);color:#22434b;border:1px solid var(--line);border-radius:8px 22px 8px 22px;padding:24px 20px;margin:12px 0;font-size:20px;font-weight:700;word-break:break-word;transform:rotate(-1deg);box-shadow:0 3px 10px rgba(30,80,90,.12)}
+.slip{position:absolute;left:50%;top:-6px;width:46px;height:30px;background:var(--slip);border:1px solid var(--line);border-radius:4px;z-index:2;animation:drop 1s ease-in forwards}
+.away{animation:away 1.2s ease-in forwards}
+@keyframes drop{0%{transform:translate(-50%,-10px) rotate(-12deg);opacity:0}15%{opacity:1}100%{transform:translate(-50%,150px) rotate(10deg) scale(.55);opacity:.9}}
+@keyframes away{to{transform:translateY(-190px) rotate(8deg) scale(.7);opacity:0}}
+.timer{text-align:center;font-size:38px;font-weight:800;color:var(--teal);font-variant-numeric:tabular-nums;margin:4px 0}
+.q{font-weight:800;text-align:center;margin:12px 0 4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--soft);border-radius:18px;padding:12px 4px;text-align:center}
+.stat b{display:block;font-size:26px}.stat span{font-size:13px;color:var(--mute)}
+.big{font-size:22px;font-weight:800;text-align:center;margin:4px 0}
+.chart{display:flex;gap:14px;align-items:flex-end;height:170px;margin-top:12px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;font-weight:700}
+.bar i{display:block;width:100%;min-height:6px;border-radius:12px 12px 4px 4px}
+.bar .no{background:var(--teal)}.bar .partly{background:#e0b25f}.bar .yes{background:#d98f73}
+.breath{width:150px;height:150px;border-radius:50%;margin:22px auto 8px;background:radial-gradient(circle,var(--teal),var(--soft));opacity:.85;transform:scale(.6)}
+.breath.in{transform:scale(1);transition:transform 4s ease-in-out}.breath.out{transform:scale(.6);transition:transform 6s ease-in-out}
+.log{border-top:1px solid var(--line);padding:10px 0}.log:first-of-type{border-top:0}.log p{margin:4px 0;word-break:break-word}
+.pill{display:inline-block;border-radius:99px;padding:1px 10px;font-size:13px;font-weight:800;color:#22434b}.pill.no{background:#bfe3e7}.pill.partly{background:#f0d9a0}.pill.yes{background:#f0c3b0}
+.skins{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 14px}
+.sk{width:48px;height:48px;border-radius:50%;border:3px solid var(--line);padding:0;cursor:pointer;transition:transform .15s,border-color .2s}
+.sk:active{transform:scale(.92)}.sk.on{border-color:var(--ink)}.sk:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.jarwrap[data-skin=honey]{--jar:#d9a441;--glass:#f6e3b4;--water:rgba(224,160,50,.42);--lid:#b9822a}
+.jarwrap[data-skin=lilac]{--jar:#9a87c9;--glass:#e4dcf6;--water:rgba(140,115,200,.4);--lid:#7a66ad}
+.jarwrap[data-skin=rose]{--jar:#d98ca0;--glass:#f8dde4;--water:rgba(214,110,140,.4);--lid:#c26a83}
+.jarwrap[data-skin=moon]{--jar:#6f86c8;--glass:#2b3a6b;--gop:.9;--water:rgba(120,150,230,.4);--lid:#4a5ca3;--slip:#f2ecd0}
+.stars{display:none}.jarwrap[data-skin=moon] .stars{display:block}
+.quote{text-align:center;font-style:italic;color:var(--mute);margin:0 8px 14px;min-height:3em;transition:opacity .6s}.quote.fade{opacity:0}
+.relief{text-align:center;font-style:italic;color:var(--mute);margin:8px 0 0}.relief:empty{display:none}
+.tags{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin:0 0 4px}
+.chip{flex:none;min-height:48px;padding:0 16px;border:2px solid var(--line);border-radius:99px;background:var(--bg);color:var(--ink);font:inherit;font-weight:700;cursor:pointer;transition:transform .15s,background .2s,border-color .2s}
+.chip:active{transform:scale(.95)}.chip.on{background:var(--soft);border-color:var(--teal)}.chip:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.pill.tg{background:var(--soft);color:var(--ink)}
+.trow{display:grid;grid-template-columns:118px 1fr 28px;font-size:15px;line-height:1.2;gap:8px;align-items:center;margin:10px 0}.trow small{grid-column:2/4;color:var(--mute);margin-top:-6px}
+.tbar{height:12px;border-radius:99px;background:var(--soft)}.tbar i{display:block;height:100%;border-radius:99px;background:var(--teal)}
+.neural{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;color:var(--teal);opacity:.13}
+.logo{display:inline-block;width:36px;height:36px;vertical-align:-7px;margin-right:8px;color:var(--teal)}
+.bi{width:72px;margin:0 auto 10px;color:var(--teal)}
+.bf{fill:var(--soft)}.mindart .bf{fill:none}
+.mindart{display:none}.jarwrap[data-skin=mind] .mindart{display:block}
+.jarwrap[data-skin=mind]{--jar:#4aa58f;--glass:#dff3ec;--water:rgba(74,165,143,.4);--lid:#2f8a74}
+.scene{position:absolute;left:50%;top:6px;width:min(94vw,440px);max-width:none;height:auto;transform:translateX(-50%);z-index:-1;color:var(--teal);pointer-events:none}
+.ci{display:inline-block;width:20px;height:20px;vertical-align:-4px;margin-right:6px;color:var(--teal)}
+.si{display:block;width:22px;height:22px;margin:0 auto 2px;color:var(--teal)}
+.hi{display:inline-block;width:22px;height:22px;vertical-align:-4px;margin-right:8px;color:var(--teal)}
+.lotus{width:30px;margin:0 auto 2px;color:var(--teal)}
+.rl{display:flex;align-items:center;gap:6px}.rl svg{width:18px;height:18px;flex:none;color:var(--teal)}
+.scene .bf{fill:none}
+a.btn{display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}
+.ci.big{width:28px;height:28px;vertical-align:-8px}
+.btn.danger{background:var(--warm);color:#4a3320}
+.tbadge{display:inline-block;background:var(--warm);color:#4a3320;border-radius:99px;padding:2px 12px;font-size:13px;font-weight:800}
+footer{text-align:center;font-size:14px;color:var(--mute);padding:12px 16px 20px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<svg class="neural" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g stroke="currentColor" stroke-width="1.2" fill="none"><path d="M30 60L120 130L90 240L200 300L310 220L370 110M120 130L230 70L310 220M90 240L40 360L150 430L200 300M200 300L290 400L370 330M150 430L120 560L240 620L290 400M240 620L350 560L370 330M120 560L50 680L160 740L240 620M350 560L330 700"/></g><g fill="currentColor"><circle cx="30" cy="60" r="4"/><circle cx="120" cy="130" r="4"/><circle cx="230" cy="70" r="4"/><circle cx="370" cy="110" r="4"/><circle cx="90" cy="240" r="4"/><circle cx="200" cy="300" r="5"/><circle cx="310" cy="220" r="4"/><circle cx="40" cy="360" r="4"/><circle cx="150" cy="430" r="4"/><circle cx="290" cy="400" r="5"/><circle cx="370" cy="330" r="4"/><circle cx="120" cy="560" r="4"/><circle cx="240" cy="620" r="5"/><circle cx="350" cy="560" r="4"/><circle cx="50" cy="680" r="4"/><circle cx="160" cy="740" r="4"/><circle cx="330" cy="700" r="4"/></g></svg>
+<main id="app"></main>
+<footer>This app is not a substitute for professional care.<br>In an emergency, call <a href="tel:999" style="color:inherit">999</a>.</footer>
+<script>
+(() => {
+'use strict';
+
+/* ---------- State & storage (all data lives in localStorage only) ---------- */
+const KEY = 'chintaJar.v1';
+const $ = s => document.querySelector(s);
+const app = $('#app');
+let S = { worries: [], time: '19:00', skin: 'glass' };   // worry: {id,text,createdAt,status,step?,outcome?}
+let view = 'home', test = false, taps = 0, tapTimer, busy = false;
+let Q = [], qi = 0, end = 0, R = [], ri = 0;   // worry-time queue / review queue
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY));
+    if (d && Array.isArray(d.worries)) S = { worries: d.worries, time: d.time || '19:00', skin: d.skin || 'glass' };
+    S.worries.forEach(w => { if (OLDTAG[w.tag]) w.tag = OLDTAG[w.tag]; });
+  } catch (e) { /* storage blocked or corrupt: start fresh */ }
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* ---------- Helpers ---------- */
+const DAY = 864e5;
+const esc = t => t.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const p2 = n => String(n).padStart(2, '0');
+const fmt = (ms, hrs) => {               // ms -> mm:ss (or h:mm:ss)
+  const s = Math.max(0, Math.ceil(ms / 1e3)), h = Math.floor(s / 3600);
+  return (hrs || h ? h + ':' : '') + p2(Math.floor(s % 3600 / 60)) + ':' + p2(s % 60);
+};
+const sealedCount = () => S.worries.filter(w => w.status === 'sealed').length;
+const dueList = () => S.worries.filter(w => !w.outcome && Date.now() - w.createdAt >= 7 * DAY);
+const get = id => S.worries.find(w => w.id === id);
+const say = (t, ok) => { const m = $('#msg'); if (m) m.textContent = t; };
+
+/* Gentle lines: a comfort quote that rotates on the home screen, and an overthinking-relief line after each worry is dropped in */
+const COMFORT = [
+  `You are allowed to feel this way, and you are allowed to rest.`,
+  `Not every thought deserves your attention tonight.`,
+  `Small steps still count. So does resting.`,
+  `Whatever today was, you got through it.`,
+  `Your feelings are valid, even the heavy ones.`,
+  `You don't have to carry everything at once.`,
+  `Be as kind to yourself as you would be to a friend.`,
+  `This feeling is real, and it will not last forever.`,
+  `Breathing slowly is a small act of care.`,
+  `You are doing better than your worried mind says.`,
+  `It's okay to ask for help. You are not alone.`,
+  `Today only needs your gentlest effort.`
+];
+const RELIEF = [
+  `It's stored safely. You don't need to solve it right now.`,
+  `Thoughts feel louder when they stay inside. Now it's out of your head.`,
+  `You've done your part for now. The jar will hold it.`,
+  `A worry in the jar is a worry that can wait.`,
+  `Let your shoulders drop. There's nothing more to figure out right now.`,
+  `Thinking in circles isn't the same as solving. You can pause.`,
+  `You can come back to this at worry time, with a calmer mind.`,
+  `One slow breath in, one slow breath out. That's enough.`,
+  `Your mind can rest now. The jar is keeping watch.`,
+  `Not every what-if needs an answer tonight.`,
+  `You wrote it down, so you don't have to hold it anymore.`,
+  `Worries often look smaller once they're written down.`
+];
+const lastPick = {};
+const pick = (arr, key) => {            // random line, never the same one twice in a row
+  let i;
+  do { i = Math.floor(Math.random() * arr.length); } while (i === lastPick[key] && arr.length > 1);
+  lastPick[key] = i; return arr[i];
+};
+let ticks = 0;
+function nextQuote() {                    // soft fade to a new home-screen quote
+  const q = $('#qt');
+  if (!q) return;
+  q.classList.add('fade');
+  setTimeout(() => { q.textContent = pick(COMFORT, 'c'); q.classList.remove('fade'); }, 600);
+}
+
+/* Worry topics: one optional tag per worry, picked with chips on the home screen */
+const TAGS = [['family', 'Family'], ['love', 'Love'], ['friends', 'Friends'], ['money', 'Money'], ['career', 'Career'], ['health', 'Physical Health'], ['academics', 'Academics'], ['other', 'Others']];
+const OLDTAG = { school: 'academics', people: 'friends', future: 'other' };   // maps topics from the first tag set
+let tag = '';
+const tagName = k => (TAGS.find(t => t[0] === k) || [0, ''])[1];
+function setTag(k) {                      // tap a chip to select it, tap again to clear
+  tag = k;
+  document.querySelectorAll('.chip').forEach(b => { const on = b.dataset.v === k; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+}
+
+/* Paper rustle: short filtered-noise bursts, synthesized (no audio file). Plays when a slip drops into the jar. */
+let AC;
+function rustle() {
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const t = AC.currentTime;
+    for (let k = 0; k < 4; k++) {
+      const at = t + k * .11, n = AC.createBufferSource(), b = AC.createBuffer(1, AC.sampleRate * .15, AC.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      const f = AC.createBiquadFilter(), g = AC.createGain();
+      n.buffer = b; f.type = 'bandpass'; f.frequency.value = 3500 + k * 700; f.Q.value = .8;
+      g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(.12, at + .02); g.gain.exponentialRampToValueAtTime(.001, at + .13);
+      n.connect(f); f.connect(g); g.connect(AC.destination); n.start(at);
+    }
+  } catch (e) { /* audio unavailable: stay silent */ }
+}
+
+/* Safety: crisis phrases are never saved as normal worries */
+const RISK = /suicid|kill myself|want to die|end my life|don'?t want to live/;
+const risky = t => RISK.test(t.toLowerCase().replace(/[\u2018\u2019`]/g, "'").replace(/\s+/g, ' '));
+const CARE = `<div class="care">You're not alone. What you wrote sounds really heavy. Please talk to someone you trust right now, such as family, a friend, or a teacher. If you're in immediate danger, call your local emergency number.<em>Emergency helpline: <a href="tel:999" style="color:inherit">999</a></em></div>`;
+
+/* Worry time: daily start time + 15-minute window */
+function wtState() {
+  const [h, m] = S.time.split(':').map(Number), n = new Date(), s = new Date(n);
+  s.setHours(h, m, 0, 0);
+  const e = s.getTime() + 15 * 60e3;
+  if (n >= s && n < e) return { open: true, left: e - n };
+  if (n < s) return { open: false, wait: s - n };
+  s.setDate(s.getDate() + 1);
+  return { open: false, wait: s - n };
+}
+
+/* ---------- Home ---------- */
+const JP = 'M70 30V48C70 56 38 64 38 92V200C38 222 52 232 72 232H128C148 232 162 222 162 200V92C162 64 130 56 130 48V30Z';
+/* Jar skins: each skin only swaps CSS variables (see .jarwrap[data-skin] rules) */
+/* Line icons (24x24, stroke only): topics, stats, headings, quote ornament */
+const ICO = {
+  family: '<circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M2.5 20c0-3.5 2.5-6 5.5-6s5.5 2.5 5.5 6M14.5 20c.2-2.6 1.6-4.4 3.5-4.4 2 0 3.5 1.8 3.5 4.4"/>',
+  love: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+  friends: '<circle cx="9" cy="12" r="5.5"/><circle cx="15.5" cy="12" r="5.5"/>',
+  money: '<circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.2c-.6-.8-1.6-1.2-2.8-1.2-1.6 0-2.8.8-2.8 2s1 1.7 2.8 2 2.8.8 2.8 2-1.2 2-2.8 2c-1.2 0-2.3-.4-2.9-1.2M12 6.5V8m0 8v1.5"/>',
+  career: '<rect x="3" y="7.5" width="18" height="12" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3 13h18"/>',
+  health: '<path d="M2.5 12.5h4l2-5 3.5 9 2.5-6 1.5 2h5.5"/>',
+  academics: '<path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5v13"/>',
+  other: '<circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/>',
+  feather: '<path d="M20 4c-8 0-13 4.5-13 11 0 1.4.3 2.7.8 3.8M20 4c0 8-4.5 12-11.5 12M4 21c2-4 5-7 9-9"/>',
+  cat: '<path d="M4.5 9.5V4l4.2 2.8a8.5 8.5 0 0 1 6.6 0L19.5 4v5.5c.9 1.2 1.5 2.6 1.5 4.2 0 3.7-4 6.3-9 6.3s-9-2.6-9-6.3c0-1.6.6-3 1.5-4.2z"/><circle cx="9" cy="12.5" r=".9"/><circle cx="15" cy="12.5" r=".9"/><path d="M11.2 15h1.6L12 16zM12 16v.8M10.4 17.6c.5.4 1 .6 1.6.6s1.1-.2 1.6-.6M1.5 14.2l2.6.8M1.5 17.4l2.8-.9M22.5 14.2l-2.6.8M22.5 17.4l-2.8-.9"/>',
+  thought: '<path d="M7 16a4 4 0 0 1 .5-8A5 5 0 0 1 17 7.5 4 4 0 0 1 17.5 16z"/><circle cx="7" cy="19.5" r="1.3"/><circle cx="4" cy="21.8" r=".8"/>',
+  bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+  neuron: '<circle cx="12" cy="12" r="3"/><path d="M12 9V4M10 14l-5 3M14 14l5 3M12 4l-2-1.5M12 4l2-1.5M5 17l-.5 2.5M5 17l-2.5-.3M19 17l.5 2.5M19 17l2.5-.3"/>',
+  head: '<path d="M9 21v-3.4C6.5 16.3 5 14.1 5 11.2a7 7 0 1 1 13.7 2l1.3 2.3-2 .8V18a3 3 0 0 1-3 3z"/><path d="M12 14.2s-2.6-1.6-2.6-3.5a1.5 1.5 0 0 1 2.6-1 1.5 1.5 0 0 1 2.6 1c0 1.9-2.6 3.5-2.6 3.5z"/>'
+};
+const ico = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[k] || ''}</svg>`;
+/* Psychology scenery behind the jar: thought bubble, neuron, idea bulb, brain, dotted "neural" paths */
+const sceneSvg = () => `<svg class="scene" viewBox="0 0 400 260" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" opacity=".3">
+<g transform="translate(22 36) scale(3.6)" stroke-width=".9"><g class="fl">${ICO.thought}</g></g>
+<g transform="translate(298 26) scale(3.4)" stroke-width=".9"><g class="fl" style="animation-delay:-2.5s">${ICO.neuron}</g></g>
+<g transform="translate(326 128) scale(2.5)" stroke-width="1"><g class="fl" style="animation-delay:-4.5s">${ICO.bulb}</g></g>
+<g transform="translate(14 150) scale(1.1)" stroke-width="1.6"><g class="fl" style="animation-delay:-1s">${BRAIN}</g></g>
+<path d="M112 70C170 18 232 16 296 52" stroke-width="1.6" stroke-dasharray="2 7"/>
+<path d="M60 218C100 196 120 236 180 224S300 208 392 232" stroke-width="1.6" stroke-dasharray="2 7"/></g>
+<g fill="currentColor" opacity=".3"><circle cx="112" cy="70" r="3"/><circle cx="296" cy="52" r="3"/><circle cx="180" cy="224" r="3"/></g></svg>`;
+
+/* Brain vector (two hemispheres + folds): used for the logo, calm screens and the Mind jar skin */
+const BRAIN = '<path class="bf" d="M30 14C26 9 18 10 16 16C10 16 7 22 10 27C6 31 8 38 13 40C13 46 19 50 25 48C27 51 30 51 30 49Z"/><path class="bf" d="M34 14C38 9 46 10 48 16C54 16 57 22 54 27C58 31 56 38 51 40C51 46 45 50 39 48C37 51 34 51 34 49Z"/><path d="M30 22C25 22 22 25 23 29M16 27C19 27 21 29 21 32M14 40C18 38 22 40 24 43M30 36C26 36 24 33 25 31M34 22C39 22 42 25 41 29M48 27C45 27 43 29 43 32M50 40C46 38 42 40 40 43M34 36C38 36 40 33 39 31"/>';
+const brainSvg = () => `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${BRAIN}</svg>`;
+const SKINS = [['glass', 'Glass', '#7fb9c4'], ['honey', 'Honey', '#d9a441'], ['lilac', 'Lilac', '#9a87c9'], ['rose', 'Rose', '#d98ca0'], ['moon', 'Moonlit', '#2b3a6b'], ['mind', 'Mind', '#4aa58f']];
+function jarSvg() {
+  return `<svg viewBox="0 0 200 240" role="img" aria-label="A glass jar holding your worries"><defs><clipPath id="jc"><path d="${JP}"/></clipPath></defs>
+<path d="${JP}" fill="var(--glass)" style="fill-opacity:var(--gop,.25)"/>
+<g clip-path="url(#jc)"><g class="mindart" transform="translate(49 87) scale(1.6)" stroke="var(--jar)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".6">${BRAIN}</g><g class="stars" fill="#fff"><circle cx="78" cy="100" r="1.6"/><circle cx="122" cy="88" r="1.2"/><circle cx="100" cy="128" r="1.8"/><circle cx="142" cy="152" r="1.3"/><circle cx="68" cy="168" r="1.5"/></g><g id="lvl" style="transform:translateY(190px)"><path class="wave" d="M0 62q25-8 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0V66H0z" fill="var(--water)"/><rect x="0" y="66" width="200" height="186" fill="var(--water)"/></g><g id="slips"></g></g>
+<path d="${JP}" fill="none" stroke="var(--jar)" stroke-width="5" stroke-linejoin="round"/>
+<path d="M52 104V190" stroke="#fff" stroke-opacity=".55" stroke-width="5" stroke-linecap="round" fill="none"/>
+<rect x="60" y="8" width="80" height="22" rx="8" style="fill:var(--lid,var(--teal))"/></svg>`;
+}
+/* Update water level + paper slips; the CSS transition animates the fill */
+function setJar() {
+  const n = sealedCount(), l = $('#lvl');
+  if (!l) return;
+  l.style.transform = `translateY(${190 - Math.min(1, n / 12) * 190}px)`;
+  let s = '';
+  for (let i = 0; i < Math.min(n, 12); i++) {
+    const r = Math.floor(i / 4), c = i % 4, x = 52 + c * 25 + (r % 2) * 10, y = 214 - r * 15;
+    s += `<rect x="${x}" y="${y}" width="22" height="12" rx="2" fill="var(--slip)" stroke="var(--line)" transform="rotate(${(i * 53 % 46) - 23} ${x + 11} ${y + 6})"/>`;
+  }
+  $('#slips').innerHTML = s;
+  $('#cnt').textContent = n ? `${n} worr${n === 1 ? 'y' : 'ies'} sealed in the jar` : 'The jar is empty. Nothing is waiting for you.';
+}
+function home() {
+  view = 'home';
+  const due = dueList().length, ans = S.worries.filter(w => w.outcome), pct = ans.length ? Math.round(ans.filter(w => w.outcome === 'no').length / ans.length * 100) : 0;
+  app.innerHTML = `
+<h1 data-a="ttl"><span class="logo">${brainSvg()}</span>Chintar Jar</h1>
+<p class="sub">${test ? '<span class="tbadge">Test mode</span>' : 'Put your worries away. Look at them later, calmly.'}</p>
+<div class="jarwrap" id="jw" data-skin="${S.skin}">${sceneSvg()}${jarSvg()}</div>
+<p class="count" id="cnt"></p>
+${ans.length ? `<p class="note" style="margin:-8px 0 12px">So far, ${pct}% of your past worries never came to pass.</p>` : ''}
+<div class="lotus">${ico('head')}</div>
+<p class="quote" id="qt">${esc(pick(COMFORT, 'c'))}</p>
+<div class="skins" role="group" aria-label="Jar style">${SKINS.map(([k, l, c]) => `<button class="sk${S.skin === k ? ' on' : ''}" data-a="skin" data-v="${k}" aria-label="${l} jar" aria-pressed="${S.skin === k}" title="${l}" style="background:${c}"></button>`).join('')}</div>
+<div class="card">
+  <input id="wi" maxlength="300" placeholder="What's worrying you?" autocomplete="off" aria-label="What's worrying you?">
+  <p class="note" style="text-align:left;margin:0 0 6px">Topic (optional)</p>
+  <div class="tags" role="group" aria-label="Worry topic">${TAGS.map(([k, l]) => `<button class="chip${tag === k ? ' on' : ''}" data-a="tag" data-v="${k}" aria-pressed="${tag === k}"><span class="ci">${ico(k)}</span>${l}</button>`).join('')}</div>
+  <button class="btn" data-a="add">Put it in the jar</button>
+  <p class="msg" id="msg" role="status"></p>
+  <p class="relief" id="rl"></p>
+  <p class="note">🔒 What you write stays on your phone only.</p>
+</div>
+<div class="card">
+  <h2><span class="hi">${brainSvg()}</span>Worry time</h2>
+  <p class="mute" style="margin:0 0 8px">Every day for 15 minutes, starting at
+  <input type="time" id="tm" value="${S.time}" style="width:auto;min-height:48px;margin:0 0 0 4px" aria-label="Daily worry time"></p>
+  <div id="wt"></div>
+</div>
+<div class="row">
+  <button class="btn alt" data-a="review">Check-in${due ? ' (' + due + ')' : ''}</button>
+  <button class="btn alt" data-a="ins">Insights</button>
+</div>
+${test ? '<button class="btn ghost" data-a="age">Test: make worries 8 days old</button>' : ''}
+<a class="btn alt" href="https://www.pictorial.shop" target="_blank" rel="noopener noreferrer"><span class="ci big">${ico('cat')}</span>Support The Project</a>
+<button class="btn ghost" data-a="wipe">Delete all data</button>
+<div id="wipebox" aria-live="polite"></div>`;
+  updateWT();
+  requestAnimationFrame(() => requestAnimationFrame(setJar));
+}
+/* Only the lock button and its countdown line change each second */
+function updateWT() {
+  const el = $('#wt');
+  if (!el) return;
+  const t = wtState(), ok = t.open || test;
+  if (el.dataset.ok !== String(ok)) {
+    el.dataset.ok = ok;
+    el.innerHTML = (ok ? '<button class="btn" data-a="open">Open the jar</button>' : '<button class="btn" disabled>🔒 Locked until worry time</button>')
+      + '<p class="mute" id="wtt" style="margin:0;text-align:center"></p>';
+  }
+  $('#wtt').textContent = ok ? (t.open ? 'Worry time is on. ' + fmt(t.left) + ' left.' : 'Test mode: lock bypassed') : 'Next worry time in ' + fmt(t.wait, 1);
+}
+function add() {
+  const i = $('#wi'), t = i.value.trim();
+  if (!t) return say('Write a few words first. Anything small counts.');
+  if (risky(t)) { i.value = ''; $('#msg').innerHTML = CARE; $('#rl').textContent = ''; return; }   // never saved
+  if (busy) return;
+  busy = true; say(''); $('#rl').textContent = '';
+  S.worries.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), text: t, createdAt: Date.now(), status: 'sealed', tag });
+  save(); i.value = ''; setTag('');
+  const sl = document.createElement('div');   // paper slip drops into the jar
+  sl.className = 'slip'; $('#jw').appendChild(sl); rustle();
+  setTimeout(() => { sl.remove(); busy = false; setJar(); say("Your worry is safely stored. We'll look at it during worry time.");
+    const rl = $('#rl'); if (rl) rl.textContent = pick(RELIEF, 'r'); }, 1000);
+}
+
+/* ---------- Worry time session ---------- */
+function openJar() {
+  const t = wtState();
+  if (!(t.open || test)) return;
+  Q = S.worries.filter(w => w.status === 'sealed').map(w => w.id);
+  qi = 0;
+  if (!Q.length) return screen('The jar is empty', 'Nothing to look at right now. Enjoy your day.');
+  end = Date.now() + 15 * 60e3; view = 'session';
+  app.innerHTML = `<div class="timer" id="tmr">${fmt(end - Date.now())}</div><p class="note" style="margin:0 0 8px">of worry time left</p><div id="stage"></div><button class="btn ghost" data-a="home">End worry time early</button>`;
+  breathe();
+}
+/* Opening breathing circle: 3 slow breaths (4s in, 6s out) */
+let breathT = [];
+function breathe() {
+  $('#stage').innerHTML = `<div class="breath" id="bc"></div><p class="q" id="bt">Breathe in…</p><button class="btn ghost" data-a="skipb">Skip to my worries</button>`;
+  breathT.forEach(clearTimeout); breathT = [];
+  let t = 400;
+  for (let c = 0; c < 3; c++) {
+    breathT.push(setTimeout(() => breathPhase(true), t)); t += 4000;
+    breathT.push(setTimeout(() => breathPhase(false), t)); t += 6000;
+  }
+  breathT.push(setTimeout(skipBreath, t));
+}
+function breathPhase(inh) {
+  const c = $('#bc');
+  if (!c || view !== 'session') return;
+  c.className = 'breath ' + (inh ? 'in' : 'out');
+  $('#bt').textContent = inh ? 'Breathe in…' : 'Breathe out slowly…';
+}
+function skipBreath() { breathT.forEach(clearTimeout); breathT = []; if (view === 'session' && $('#bc')) step(); }
+function step() {
+  if (qi >= Q.length) return finish('done');
+  const w = get(Q[qi]);
+  $('#stage').innerHTML = `<p class="mute" style="margin:0">Worry ${qi + 1} of ${Q.length}${w.tag ? ' (' + tagName(w.tag) + ')' : ''}</p><div class="slipcard" id="sc">${esc(w.text)}</div>
+<p class="q">What would help most?</p><div id="opts">
+<button class="btn" data-a="do">I can do something about this</button>
+<button class="btn alt" data-a="out">This is out of my control</button>
+<button class="btn ghost" data-a="later">Look at it later</button></div>`;
+}
+function sessionAct(a) {
+  const w = get(Q[qi]);
+  if (a === 'do') {
+    $('#opts').innerHTML = `<p class="q">What's one small next step?</p><input id="ns" maxlength="200" placeholder="e.g. Send that message tomorrow morning" aria-label="One small next step">
+<button class="btn" data-a="savestep">Save my step</button><button class="btn ghost" data-a="back">Back</button>`;
+    $('#ns').focus();
+  } else if (a === 'back') step();
+  else if (a === 'savestep') {
+    const s = $('#ns').value.trim();
+    if (!s) return $('#ns').focus();
+    w.status = 'action'; w.step = s; save(); qi++; step();
+  } else if (a === 'out') {               // release animation: the slip floats away
+    w.status = 'letgo'; save();
+    $('#sc').classList.add('away');
+    $('#opts').querySelectorAll('button').forEach(b => b.disabled = true);
+    setTimeout(() => { if (view === 'session') { qi++; step(); } }, 1200);
+  } else if (a === 'later') { qi++; step(); }
+}
+function finish(kind) {
+  screen(kind === 'time' ? 'Worry time is over' : 'That is enough for today',
+    kind === 'time' ? 'Anything left stays safely sealed until tomorrow. Take a slow breath.' : 'You looked at your worries with care. The rest can wait. Take a slow breath and enjoy your day.');
+}
+function screen(title, text, ins) {       // calm message screen
+  view = 'done';
+  app.innerHTML = `<div class="card" style="text-align:center;margin-top:24px"><div class="bi">${brainSvg()}</div><h2>${title}</h2><p style="margin:0">${text}</p></div>${ins ? '<button class="btn alt" data-a="ins">See my insights</button>' : ''}<button class="btn" data-a="home">Back home</button>`;
+}
+
+/* ---------- Weekly check ---------- */
+function startReview() { R = dueList().map(w => w.id); ri = 0; view = 'review'; rstep(); }
+function rstep() {
+  if (!R.length) return screen('Nothing to review yet', 'A worry is ready for a check-in a week after you add it. Until then, it is safe in the jar.');
+  if (ri >= R.length) return screen('All caught up', 'Thank you for checking in. Seeing what really happened helps your mind learn.', true);
+  const w = get(R[ri]), d = Math.floor((Date.now() - w.createdAt) / DAY);
+  app.innerHTML = `<button class="btn ghost" data-a="home">← Home</button>
+<p class="mute" style="margin:8px 0 0">Check-in ${ri + 1} of ${R.length}. Added ${d} days ago.${w.tag ? ' Topic: ' + tagName(w.tag) + '.' : ''}</p><div class="slipcard">${esc(w.text)}</div>
+<p class="q">Did what you feared happen?</p>
+<button class="btn" data-a="ans" data-v="yes">Yes</button><button class="btn alt" data-a="ans" data-v="no">No</button><button class="btn alt" data-a="ans" data-v="partly">Partly</button>`;
+}
+
+function takeaway(w) {                    // optional one-line reflection after each answer
+  const h = { no: 'It did not happen.', partly: 'Partly. Thank you for being honest.', yes: 'It did happen. Noticing that is useful too.' }[w.outcome];
+  app.innerHTML = `<div class="card" style="text-align:center;margin-top:24px"><h2 style="margin:0">${h}</h2></div>
+<p class="q">Quick takeaway? (optional)</p><input id="tk" maxlength="160" placeholder="e.g. I worried more than I needed to" aria-label="Takeaway">
+<button class="btn" data-a="tk">Save and continue</button><button class="btn ghost" data-a="tk0">Skip</button>`;
+}
+
+/* ---------- Insights ---------- */
+function insights() {
+  view = 'ins';
+  const ws = S.worries, a = ws.filter(w => w.outcome), n = ws.length;
+  const N = { no: 0, partly: 0, yes: 0 };
+  a.forEach(w => N[w.outcome]++);
+  const max = Math.max(1, N.no, N.partly, N.yes), pct = a.length ? Math.round(N.no / a.length * 100) : 0;
+  const tc = {};
+  ws.forEach(w => { if (w.tag) tc[w.tag] = (tc[w.tag] || 0) + 1; });
+  const tmax = Math.max(1, ...Object.values(tc));
+  const topics = Object.keys(tc).length ? '<div class="card"><h2>What your worries are about</h2>' + TAGS.filter(([k]) => tc[k]).sort((x, y) => tc[y[0]] - tc[x[0]]).map(([k, l]) => {
+    const done = a.filter(w => w.tag === k), no = done.filter(w => w.outcome === 'no').length;
+    return `<div class="trow"><span class="rl">${ico(k)}${l}</span><div class="tbar"><i style="width:${Math.round(tc[k] / tmax * 100)}%"></i></div><b>${tc[k]}</b>${done.length ? `<small>${no} of ${done.length} never happened</small>` : ''}</div>`;
+  }).join('') + '</div>' : '';
+  const log = a.slice().sort((x, y) => (y.answeredAt || 0) - (x.answeredAt || 0)).slice(0, 20).map(w => `<div class="log"><span class="pill ${w.outcome}">${{ no: 'Did not happen', partly: 'Partly', yes: 'Happened' }[w.outcome]}</span>${w.tag ? ' <span class="pill tg">' + tagName(w.tag) + '</span>' : ''}<p>${esc(w.text)}</p>${w.takeaway ? '<p class="mute">Takeaway: ' + esc(w.takeaway) + '</p>' : ''}</div>`).join('');
+  const stat = (v, l, k) => `<div class="stat"><i class="si">${ico(k)}</i><b>${v}</b><span>${l}</span></div>`;
+  const bar = (k, l) => `<div class="bar"><b>${N[k]}</b><i class="${k}" style="height:${Math.round(N[k] / max * 110)}px"></i><span>${l}</span></div>`;
+  app.innerHTML = `<button class="btn ghost" data-a="home">← Home</button><h1 style="font-size:26px"><span class="logo" style="width:30px;height:30px;vertical-align:-6px">${brainSvg()}</span>Your insights</h1>`
+    + (n ? `<div class="stats" style="margin-top:12px">${stat(n, 'worries stored', 'thought')}${stat(ws.filter(w => w.status === 'action').length, 'action planned', 'bulb')}${stat(ws.filter(w => w.status === 'letgo').length, 'let go', 'feather')}</div>` : '')
+    + '<div class="card">' + (a.length
+      ? `<p class="big">${pct}% of your past worries never came to pass.</p><p class="mute" style="text-align:center;margin:4px 0">${pct >= 50 ? 'Your mind often prepares for things that never come. Worry time helps you notice that.' : 'Some worries do show up, and you can face them. Sorting them in worry time helps you focus on what you can influence.'}</p><div class="chart">${bar('no', 'No')}${bar('partly', 'Partly')}${bar('yes', 'Yes')}</div>`
+      : `<div class="bi">${brainSvg()}</div><p style="text-align:center;margin:0">${n ? 'Nothing to show yet. Once a worry is a week old, we will ask how it turned out and your results will grow here.' : 'Your insights will grow here. Add a worry, and after a week we will ask how it turned out.'}</p>`) + '</div>'
+    + topics
+    + (a.length ? '<div class="card"><h2>Worry vs. Reality Log</h2>' + log + '</div>' : '');
+}
+
+function pickSkin(k) {                    // swap colors instantly; keeps whatever the user is typing
+  S.skin = k; save();
+  const j = $('#jw'); if (j) j.dataset.skin = k;
+  document.querySelectorAll('.sk').forEach(b => { const on = b.dataset.v === k; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+}
+
+/* ---------- Events (delegated) ---------- */
+const ACTIONS = {
+  add, home, open: openJar, review: startReview, ins: insights,
+  ttl() {                                   // 5 quick taps on the title toggle test mode
+    taps++; clearTimeout(tapTimer); tapTimer = setTimeout(() => taps = 0, 1500);
+    if (taps >= 5) { taps = 0; test = !test; home(); say(test ? 'Test mode on' : 'Test mode off'); }
+  },
+  wipe() {                                  // in-page confirmation: native confirm() is blocked inside published pages
+    $('#wipebox').innerHTML = `<div class="card"><p style="margin:0 0 8px;font-weight:700">Delete all your worries and settings from this phone? This cannot be undone.</p><button class="btn danger" data-a="wipeyes">Yes, delete everything</button><button class="btn ghost" data-a="wipeno">Cancel</button></div>`;
+    $('#wipebox').scrollIntoView({ block: 'nearest' });
+  },
+  wipeno() { $('#wipebox').innerHTML = ''; },
+  wipeyes() {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    S = { worries: [], time: '19:00', skin: 'glass' }; tag = '';
+    home(); say('All your data has been deleted.');
+  },
+  age() { S.worries.forEach(w => w.createdAt -= 8 * DAY); save(); home(); say('Your worries are now 8 days old.'); }
+};
+['do', 'out', 'later', 'savestep', 'back'].forEach(k => ACTIONS[k] = () => sessionAct(k));
+ACTIONS.skipb = skipBreath;
+ACTIONS.tk = () => { const w = get(R[ri]); w.takeaway = $('#tk').value.trim(); save(); ri++; rstep(); };
+ACTIONS.tk0 = () => { ri++; rstep(); };
+app.addEventListener('click', e => {
+  const b = e.target.closest('[data-a]');
+  if (!b || b.disabled) return;
+  if (b.dataset.a === 'ans') {              // weekly check answer
+    const w = get(R[ri]); w.outcome = b.dataset.v; w.answeredAt = Date.now(); save(); takeaway(w);
+  } else if (b.dataset.a === 'skin') pickSkin(b.dataset.v);
+  else if (b.dataset.a === 'tag') setTag(tag === b.dataset.v ? '' : b.dataset.v);
+  else if (ACTIONS[b.dataset.a]) ACTIONS[b.dataset.a]();
+});
+app.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (e.target.id === 'wi') add(); else if (e.target.id === 'ns') sessionAct('savestep'); else if (e.target.id === 'tk') ACTIONS.tk();
+});
+app.addEventListener('change', e => {
+  if (e.target.id === 'tm' && e.target.value) { S.time = e.target.value; save(); updateWT(); }
+});
+
+/* One-second tick: home countdown + worry-time timer */
+setInterval(() => {
+  if (view === 'home') { updateWT(); if (++ticks % 20 === 0) nextQuote(); }
+  else if (view === 'session') {
+    const left = end - Date.now();
+    if (left <= 0) finish('time'); else $('#tmr').textContent = fmt(left);
+  }
+}, 1000);
+
+load(); home();
+})();
+</script>
+</body>
+</html>
